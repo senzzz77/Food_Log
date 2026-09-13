@@ -1,0 +1,28 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 112rpx 32rpx;
+}
+
+.icon {
+  font-size: 76rpx;
+  margin-bottom: 24rpx;
+}
+
+.title {
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  margin-bottom: 8rpx;
+  text-align: center;
+}
+
+.desc {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  text-align: center;
+  line-height: $line-height-loose;
+}

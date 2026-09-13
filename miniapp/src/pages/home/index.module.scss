@@ -1,0 +1,249 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  padding: 28rpx 32rpx 56rpx;
+  background: $color-bg-page;
+}
+
+.actionRow {
+  display: flex;
+  align-items: stretch;
+  gap: 16rpx;
+  margin: 24rpx 0 32rpx;
+}
+
+.actionBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 140rpx;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.actionIcon {
+  font-size: 40rpx;
+  line-height: 1;
+  margin-bottom: 12rpx;
+}
+
+.actionLabel {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  white-space: nowrap;
+}
+
+.sectionTitle {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin: 24rpx 8rpx 16rpx;
+}
+
+.mealSection {
+  margin-bottom: 20rpx;
+}
+
+.mealHeader {
+  display: flex;
+  align-items: center;
+  margin: 8rpx 8rpx 12rpx;
+}
+
+.mealLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  margin-right: 12rpx;
+}
+
+.mealCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.entryList {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.modalMask {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modalCard {
+  width: 82%;
+  max-height: 84vh;
+  overflow-y: auto;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: 32rpx;
+  box-shadow: $shadow-card;
+}
+
+.modalTitle {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: 24rpx;
+}
+
+.formField {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.formLabel {
+  width: 160rpx;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+.formInput {
+  flex: 1;
+  height: 76rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-sm;
+  padding: 0 20rpx;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  box-sizing: border-box;
+}
+
+.modalActions {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 28rpx;
+}
+
+.modalCancel {
+  @include button-reset;
+  flex: 1;
+  height: 84rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-button;
+  color: $color-text-secondary;
+  font-size: $font-size-md;
+}
+
+.modalSave {
+  @include button-reset;
+  flex: 1;
+  height: 84rpx;
+  background: $color-primary;
+  border-radius: $radius-button;
+  color: $color-text-white;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+}
+
+.foodNutrition {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: 20rpx;
+}
+
+.foodMealTabs {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 20rpx;
+}
+
+.foodMealTab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 68rpx;
+  border-radius: $radius-sm;
+  background: $color-bg-hover;
+}
+
+.foodMealTabActive {
+  background: $color-primary;
+}
+
+.foodMealTabText {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.foodMealTabTextActive {
+  color: $color-text-white;
+  font-weight: $font-weight-medium;
+}
+
+.foodComputed {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-calorie;
+  margin: 4rpx 0 8rpx;
+}
+
+.foodList {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.foodItem {
+  display: flex;
+  align-items: center;
+  background: $color-bg-hover;
+  border-radius: $radius-sm;
+  padding: 24rpx 26rpx;
+}
+
+.foodItemInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.foodItemName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  margin-bottom: 4rpx;
+}
+
+.foodItemMeta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.foodItemAdd {
+  margin-left: 16rpx;
+  font-size: $font-size-sm;
+  color: $color-primary;
+  flex-shrink: 0;
+}
