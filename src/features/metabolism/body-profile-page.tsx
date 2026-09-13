@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useForm, type UseFormRegisterReturn } from "react-hook-form";
+import { useForm, type Resolver, type UseFormRegisterReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Activity, RotateCcw, Save, Sparkles } from "lucide-react";
@@ -37,6 +37,8 @@ const bodySchema = z.object({
   manualFat: optionalNumber(0, 300),
 });
 type BodyForm = z.infer<typeof bodySchema>;
+// zodResolver 的泛型使用 z.input 类型，而 z.preprocess 的 input 为 unknown，这里显式对齐输出类型。
+const resolver = zodResolver(bodySchema) as unknown as Resolver<BodyForm>;
 const defaults: BodyForm = {
   heightCm: 170, weightKg: 65, age: 28, sex: "female", activityLevel: "moderate", goal: "fat_loss", targetWeightKg: 60, weeklyRateKg: 0.4,
   manualTdee: null, manualTargetCalories: null, manualProtein: null, manualCarbs: null, manualFat: null,
@@ -48,7 +50,7 @@ export function BodyProfilePage() {
   const profile = useProfileStore((state) => state.profiles.find((item) => item.id === profileId));
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState<string | null>(null);
-  const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<BodyForm>({ resolver: zodResolver(bodySchema), defaultValues: defaults });
+  const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<BodyForm>({ resolver, defaultValues: defaults });
 
   useEffect(() => {
     if (!token || !profileId) return;
@@ -127,7 +129,7 @@ export function BodyProfilePage() {
             <Metric label="基础代谢 BMR" value={`${formatCalories(result.bmr)} kcal`} />
             <Metric label="每日总消耗 TDEE" value={`${formatCalories(result.tdee)} kcal`} custom={values.manualTdee != null} />
             <div className="mt-6 border-t border-dashed border-[#d4e0d0] pt-5 dark:border-[#405241]">
-              <p className="subtle-text text-xs">每日摄入{customTag(values.manualTargetCalories)}</p>
+              <p className="subtle-text text-xs">每日摄入{customTag(values.manualTargetCalories != null)}</p>
               <p className="mt-1 text-xl font-bold text-[#315d47] dark:text-[#b6d6b9]">{formatCalories(result.targetCalories.low)} - {formatCalories(result.targetCalories.high)} kcal</p>
               <p className="subtle-text mt-2 text-xs leading-5">目标中位值 {formatCalories(result.targetCalories.midpoint)} kcal。</p>
             </div>
