@@ -1,0 +1,101 @@
+@use '@/styles/variables.scss' as *;
+
+.card {
+  width: 100%;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  border-radius: $radius-lg;
+  padding: 32rpx 28rpx;
+  box-shadow: $shadow-card;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8rpx;
+}
+
+.label {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.calorieRow {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 24rpx;
+}
+
+.calorieValue {
+  font-size: 60rpx;
+  font-weight: $font-weight-bold;
+  color: $color-text-white;
+  line-height: 1.1;
+}
+
+.calorieUnit {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+  margin-left: 8rpx;
+}
+
+.target {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.85);
+  margin-left: 16rpx;
+}
+
+.progressWrap {
+  height: 12rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: $radius-round;
+  overflow: hidden;
+  margin-bottom: 32rpx;
+}
+
+.progressBar {
+  height: 100%;
+  background: $color-text-white;
+  border-radius: $radius-round;
+  transition: width $transition-base;
+}
+
+.macros {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.macroItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  position: relative;
+  padding: 8rpx 0;
+
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2rpx;
+    height: 48rpx;
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+.macroValue {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-white;
+  line-height: 1.2;
+}
+
+.macroLabel {
+  font-size: $font-size-xs;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 6rpx;
+}

@@ -1,0 +1,80 @@
+@use '@/styles/variables.scss' as *;
+
+.item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: 26rpx 24rpx;
+  box-shadow: $shadow-card;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.name {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+  margin-bottom: 6rpx;
+}
+
+.meta {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  @include text-ellipsis;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+}
+
+.calories {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-calorie;
+  line-height: 1.2;
+}
+
+.caloriesUnit {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+  margin-top: 2rpx;
+}
+
+.edit {
+  margin-left: 12rpx;
+  padding: 8rpx;
+  border-radius: $radius-sm;
+  background: $color-bg-hover;
+  flex-shrink: 0;
+}
+
+.editText {
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.delete {
+  margin-left: 12rpx;
+  padding: 8rpx;
+  border-radius: $radius-sm;
+  background: $color-bg-hover;
+  flex-shrink: 0;
+}
+
+.deleteText {
+  font-size: 28rpx;
+  line-height: 1;
+}

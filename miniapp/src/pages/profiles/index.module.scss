@@ -1,0 +1,115 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  padding: 28rpx 32rpx 56rpx;
+  background: $color-bg-page;
+}
+
+.sectionTitle {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin: 20rpx 8rpx 12rpx;
+}
+
+.profileItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: 28rpx;
+  margin-bottom: 16rpx;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.accentDot {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: $radius-round;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.name {
+  flex: 1;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  @include text-ellipsis;
+}
+
+.activeBadge {
+  font-size: $font-size-xs;
+  color: $color-primary;
+}
+
+.card {
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: 28rpx;
+  box-shadow: $shadow-card;
+  margin-top: 16rpx;
+}
+
+.input {
+  width: 100%;
+  height: 88rpx;
+  background: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: 0 24rpx;
+  font-size: $font-size-md;
+  color: $color-text-primary;
+  box-sizing: border-box;
+  margin-bottom: 24rpx;
+}
+
+.accents {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 32rpx;
+}
+
+.accentOption {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: $radius-round;
+  margin-right: 24rpx;
+  margin-bottom: 16rpx;
+  border: 4rpx solid transparent;
+  box-sizing: border-box;
+}
+
+.accentSelected {
+  border-color: $color-text-primary;
+}
+
+.createBtn {
+  @include button-reset;
+  width: 100%;
+  height: 80rpx;
+  background: $color-primary;
+  border-radius: $radius-button;
+  transition: all $transition-base;
+
+  &:active {
+    opacity: 0.9;
+    transform: scale(0.98);
+  }
+}
+
+.createBtnText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-text-white;
+}
+
+.empty {
+  padding-top: 96rpx;
+}

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+src-tauri/target/
+.vite/
+*.log
+.env
+server/.env
+deploy/.env.production
+third_party/

@@ -1,0 +1,26 @@
+name: diet-assistant
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: diet-assistant-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: diet_assistant
+      MYSQL_USER: diet_app
+      MYSQL_PASSWORD: diet_app_dev_password
+      MYSQL_ROOT_PASSWORD: root_dev_password
+      TZ: Asia/Shanghai
+    ports:
+      - "3307:3306"
+    volumes:
+      - diet_assistant_mysql:/var/lib/mysql
+      - ./server/sql/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot_dev_password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  diet_assistant_mysql:

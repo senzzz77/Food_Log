@@ -1,0 +1,72 @@
+@use '@/styles/variables.scss' as *;
+
+.container {
+  min-height: 100vh;
+  padding: 28rpx 32rpx 56rpx;
+  background: $color-bg-page;
+}
+
+.dateBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $color-bg-card;
+  border-radius: $radius-md;
+  padding: 22rpx 26rpx;
+  box-shadow: $shadow-card;
+  margin-bottom: 24rpx;
+}
+
+.arrow {
+  font-size: $font-size-lg;
+  color: $color-text-secondary;
+  padding: 8rpx 16rpx;
+}
+
+.dateText {
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.todayBtn {
+  font-size: $font-size-sm;
+  color: $color-primary;
+  padding: 8rpx 8rpx;
+}
+
+.sectionTitle {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin: 24rpx 8rpx 16rpx;
+}
+
+.mealSection {
+  margin-bottom: 20rpx;
+}
+
+.mealHeader {
+  display: flex;
+  align-items: center;
+  margin: 8rpx 8rpx 12rpx;
+}
+
+.mealLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  margin-right: 12rpx;
+}
+
+.mealCount {
+  font-size: $font-size-xs;
+  color: $color-text-tertiary;
+}
+
+.entryList {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
