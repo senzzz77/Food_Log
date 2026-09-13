@@ -13,27 +13,6 @@
 - 三餐食谱方案生成、一键加入当日台账和历史日期查询
 - 体重与每日摄入热量趋势图
 
-
-## 本地启动
-
-前置要求：Node.js 22+、MySQL 8.0+。
-
-在 `server/.env` 填写数据库连接信息后，执行：
-
-```powershell
-npm install
-npm run start:local
-```
-
-浏览器访问 `http://127.0.0.1:5173`。该命令会同时启动前端和 API；运行命令的终端需要保持开启。
-
-## 验证
-
-```powershell
-npm run api:check
-npm run build
-```
-
 - 将前端构建变量 `VITE_API_BASE_URL` 设为公网 API 地址，例如 `https://api.example.com/api`。
 - 使用反向代理提供 HTTPS，并分别部署前端静态文件与 API 服务。
 
