@@ -1,9 +1,10 @@
 FROM node:22-bookworm-slim AS api
 
 WORKDIR /app
-ENV NODE_ENV=production
 COPY package.json package-lock.json ./
-RUN npm ci
+# tsx 是 devDependency,必须显式包含(ENV NODE_ENV=production 会让 npm ci 默认跳过 dev)
+RUN npm ci --include=dev
+ENV NODE_ENV=production
 COPY server ./server
 
 EXPOSE 3000
