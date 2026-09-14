@@ -9,6 +9,12 @@ export function listFoods(token: string, snack?: boolean) {
   const suffix = snack === undefined ? "" : `?snack=${snack}`;
   return apiRequest<{ foods: FoodItem[] }>(`/foods${suffix}`, {}, token);
 }
+
+export interface UserFood { id: string; name: string; caloriesPer100g: number; proteinPer100g: number; carbsPer100g: number; fatPer100g: number }
+export interface UserFoodInput { name: string; caloriesPer100g: number; proteinPer100g: number; carbsPer100g: number; fatPer100g: number }
+export function listUserFoods(token: string) { return apiRequest<{ foods: UserFood[] }>(`/foods/mine`, {}, token); }
+export function addUserFood(token: string, food: UserFoodInput) { return apiRequest<{ food: UserFood }>(`/foods/mine`, { method: "POST", body: JSON.stringify(food) }, token); }
+export function deleteUserFood(token: string, foodId: string) { return apiRequest<void>(`/foods/mine/${foodId}`, { method: "DELETE" }, token); }
 export function getDiary(token: string, profileId: string, date: string) { return apiRequest<DiaryData>(`/diaries/${profileId}?date=${date}`, {}, token); }
 export function addEntry(token: string, profileId: string, entry: EntryPayload) { return apiRequest<{ entry: MealEntry }>(`/diaries/${profileId}/entries`, { method: "POST", body: JSON.stringify(entry) }, token); }
 export function parseEntries(token: string, profileId: string, payload: { date: string; mealType: MealEntry["mealType"]; text: string }) { return apiRequest<{ accepted: MealEntry[]; rejected: string[] }>(`/diaries/${profileId}/parse-text`, { method: "POST", body: JSON.stringify(payload) }, token); }
@@ -17,3 +23,4 @@ export function deleteEntry(token: string, profileId: string, entryId: string) {
 export interface NutritionPer100g { caloriesPer100g: number; proteinPer100g: number; carbsPer100g: number; fatPer100g: number }
 export interface RecognizedFood { name: string; food: FoodItem | null; estimate: NutritionPer100g | null }
 export function recognizeFoods(token: string, imageBase64: string, mimeType: string) { return apiRequest<{ items: RecognizedFood[] }>(`/vision/recognize`, { method: "POST", body: JSON.stringify({ imageBase64, mimeType }) }, token); }
+export function recognizeNutritionFacts(token: string, imageBase64: string, mimeType: string) { return apiRequest<{ items: RecognizedFood[] }>(`/vision/recognize-nutrition`, { method: "POST", body: JSON.stringify({ imageBase64, mimeType }) }, token); }
