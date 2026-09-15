@@ -331,7 +331,8 @@ export function DiaryPage() {
           <ul className="divide-y divide-[#eef3ec] rounded-md border border-[#e4ece1] dark:divide-[#2c382e] dark:border-[#354337]">{photoItems.map((item, index) => {
             const parsed = parsePhotoNutrition(item);
             const sourceLabel = item.manualFoodId && item.manualFoodId === item.food?.id ? "食物库匹配" : item.manualFoodId ? "已选食物库" : "AI 估算";
-            return <li key={`${item.name}-${index}`} className="px-4 py-3">
+            // key 不能包含 item.name：改名会导致列表项重建、输入框失焦
+            return <li key={index} className="px-4 py-3">
               <div className="flex flex-wrap items-center gap-3">
                 <Input className="h-8 w-40 min-w-32 flex-1 text-sm font-medium" value={item.name} placeholder="食物名称" onChange={(event) => updatePhotoItem(index, { name: event.target.value })} />
                 <Select className="h-8 w-44 text-sm" value={item.manualFoodId} onChange={(event) => { const food = foods.find((candidate) => candidate.id === event.target.value); updatePhotoItem(index, food ? { manualFoodId: food.id, name: food.name, calories: String(food.caloriesPer100g), protein: String(food.proteinPer100g), carbs: String(food.carbsPer100g), fat: String(food.fatPer100g) } : { manualFoodId: "" }); }}><option value="">不关联食物库</option>{foods.map((food) => <option key={food.id} value={food.id}>{food.name}</option>)}</Select>
