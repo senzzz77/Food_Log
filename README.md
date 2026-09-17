@@ -13,6 +13,7 @@
 - 早餐、午餐、晚餐、加餐分类记录与每日热量统计
 - 三餐食谱方案生成、一键加入当日台账和历史日期查询
 - 体重与每日摄入热量趋势图
+- 后台管理（用户与角色、用户档案、食物库数据、识图大模型 Key）
 - 浅色与深色主题
 
 ## 技术栈
@@ -77,26 +78,42 @@ npm run start:local
 
 > 后端会在启动时自动创建所需的数据表（`initializeDatabase()`）。
 
+### 管理员账号
+
+首次启动时，如果数据库中还没有管理员，后端会自动创建账号 `admin`，并在启动日志中打印随机生成的初始密码：
+
+```
+已创建管理员账号 admin，初始密码：xxxxxxxxxxxxxxxx。该密码仅在本次创建时输出一次，请自行妥善保存。
+```
+
+用该账号登录后，顶部导航会出现「后台管理」入口（路由 `/admin`），可以：
+
+- **用户与角色**：查看全部用户、调整角色（普通用户 / 管理员）、级联删除用户或其名下档案
+- **食物库**：搜索、新增、编辑、删除食物；「下架」的食物不再出现在搜索、图片识别和文字记录中，但仍保留在后台
+- **识图 Key**：新增 / 编辑 / 启用多条视觉模型 Key，随时切换识图所用的大模型与 API Key
+
+> 出于安全考虑，后端限制了「取消自己的管理员权限」和「删除当前登录账号」，且始终至少保留一名管理员。
+
 ## 环境变量说明
 
 ### 后端（`server/.env`）
 
 后端通过 `dotenv` 读取 `server/.env`，所有配置项均有默认值，即使不创建该文件也能以本地默认配置启动。完整配置见 [server/.env.example](server/.env.example)。
 
-| 变量                 | 说明                                           | 默认值                  |
-| -------------------- | ---------------------------------------------- | ----------------------- |
-| `API_PORT`           | API 监听端口                                   | `3000`                  |
-| `API_HOST`           | API 监听地址                                   | `127.0.0.1`             |
-| `CORS_ORIGIN`        | 允许跨域的前端来源（须为合法 URL）             | `http://127.0.0.1:5173` |
-| `DATABASE_HOST`      | MySQL 地址                                     | `127.0.0.1`             |
-| `DATABASE_PORT`      | MySQL 端口                                     | `3307`                  |
-| `DATABASE_NAME`      | 数据库名                                       | `diet_assistant`        |
-| `DATABASE_USER`      | 数据库用户                                     | `diet_app`              |
-| `DATABASE_PASSWORD`  | 数据库密码                                     | `diet_app_dev_password` |
-| `JWT_SECRET`         | JWT 签名密钥（生产环境必须替换，至少 32 字符） | 本地开发默认值          |
-| `DASHSCOPE_API_KEY`  | 视觉识别服务密钥（可选，用于拍照识别）         | 空                      |
-| `DASHSCOPE_MODEL`    | 视觉识别模型                                   | `qwen3.5-plus`          |
-| `DASHSCOPE_BASE_URL` | 视觉识别服务地址（OpenAI 兼容接口）            | 阿里云 DashScope        |
+| 变量                 | 说明                                                               | 默认值                  |
+| -------------------- | ------------------------------------------------------------------ | ----------------------- |
+| `API_PORT`           | API 监听端口                                                       | `3000`                  |
+| `API_HOST`           | API 监听地址                                                       | `127.0.0.1`             |
+| `CORS_ORIGIN`        | 允许跨域的前端来源（须为合法 URL）                                 | `http://127.0.0.1:5173` |
+| `DATABASE_HOST`      | MySQL 地址                                                         | `127.0.0.1`             |
+| `DATABASE_PORT`      | MySQL 端口                                                         | `3307`                  |
+| `DATABASE_NAME`      | 数据库名                                                           | `diet_assistant`        |
+| `DATABASE_USER`      | 数据库用户                                                         | `diet_app`              |
+| `DATABASE_PASSWORD`  | 数据库密码                                                         | `diet_app_dev_password` |
+| `JWT_SECRET`         | JWT 签名密钥（生产环境必须替换，至少 32 字符）                     | 本地开发默认值          |
+| `DASHSCOPE_API_KEY`  | 视觉识别服务密钥（可选；后台「识图 Key」优先，未配置时回退到此值） | 空                      |
+| `DASHSCOPE_MODEL`    | 视觉识别模型                                                       | `qwen3.5-plus`          |
+| `DASHSCOPE_BASE_URL` | 视觉识别服务地址（OpenAI 兼容接口）                                | 阿里云 DashScope        |
 
 ### 前端（`VITE_API_BASE_URL`）
 

@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/services/auth-service";
 import { useAppStore } from "@/stores/app-store";
 
 const AuthPage = lazy(() => import("@/features/auth/auth-page").then(({ AuthPage }) => ({ default: AuthPage })));
+const AdminPage = lazy(() => import("@/features/admin/admin-page").then(({ AdminPage }) => ({ default: AdminPage })));
 const DashboardPage = lazy(() => import("@/features/dashboard/dashboard-page").then(({ DashboardPage }) => ({ default: DashboardPage })));
 const DiaryPage = lazy(() => import("@/features/diary/diary-page").then(({ DiaryPage }) => ({ default: DiaryPage })));
 const HistoryPage = lazy(() => import("@/features/history/history-page").then(({ HistoryPage }) => ({ default: HistoryPage })));
@@ -43,6 +44,7 @@ function SessionGate() {
       <Route path="/progress" element={<ProgressPage />} />
       <Route path="/profiles" element={<ProfilesPage />} />
       <Route path="/profile/body" element={<BodyProfilePage />} />
+      <Route path="/admin" element={user.role === "admin" ? <AdminPage /> : <Navigate to="/recipes" replace />} />
       <Route path="/settings" element={<PlaceholderPage title="设置" description="主题偏好已在侧栏提供切换。" />} />
     </Route>
     <Route path="*" element={<Navigate to="/recipes" replace />} />

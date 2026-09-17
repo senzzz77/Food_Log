@@ -1,4 +1,6 @@
+import type { RowDataPacket } from "mysql2";
 import { config } from "./config.js";
+import { database } from "./database.js";
 
 export interface VisionFood {
   name: string;
@@ -25,26 +27,48 @@ const SYSTEM_PROMPT =
 const FOOD_JSON_GUIDE =
   "每个食物用一个对象表示，包含字段：name（中文食物名，不含数量/量词）、caloriesPer100g（每100克热量，千卡）、proteinPer100g（每100克蛋白质，克）、carbsPer100g（每100克碳水，克）、fatPer100g（每100克脂肪，克）。营养数值请按常见食材给出合理估算。只输出 JSON 数组。";
 
+// 后台切换启用的 Key 后通过 invalidateActiveVisionKey() 失效，避免每次识别都查库。
+let cachedKey: { apiKey: string; model: string; baseUrl: string } | undefined;
+
 /**
  * 统一调用千问（qwen3.5-plus 为思考型模型，关闭思考后 content 会直接、稳定地返回 JSON）。
  * 返回模型生成的纯文本 content。
  */
+export function invalidateActiveVisionKey() {
+  cachedKey = undefined;
+}
+
+/** 优先使用后台启用的 Key，未配置时回退到环境变量。 */
+async function resolveVisionKey(): Promise<{ apiKey: string; model: string; baseUrl: string }> {
+  if (cachedKey !== undefined) return cachedKey;
+
+  const [rows] = await database.query<Array<RowDataPacket & { api_key: string; model: string; base_url: string }>>(
+    "SELECT api_key, model, base_url FROM vision_keys WHERE is_active = TRUE LIMIT 1",
+  );
+  const row = rows[0];
+  cachedKey = row
+    ? { apiKey: row.api_key, model: row.model, baseUrl: row.base_url }
+    : { apiKey: config.DASHSCOPE_API_KEY, model: config.DASHSCOPE_MODEL, baseUrl: config.DASHSCOPE_BASE_URL };
+  return cachedKey;
+}
+
 async function callQwen(messages: QwenMessage[]): Promise<string> {
-  if (!config.DASHSCOPE_API_KEY) {
-    throw new Error("尚未配置千问 API Key，请在 server/.env 中设置 DASHSCOPE_API_KEY。");
+  const { apiKey, model, baseUrl } = await resolveVisionKey();
+  if (!apiKey) {
+    throw new Error("尚未配置千问 API Key，请在后台「识图 Key」中添加并启用，或在 server/.env 中设置 DASHSCOPE_API_KEY。");
   }
 
   const body = {
-    model: config.DASHSCOPE_MODEL,
+    model,
     messages,
     temperature: 0.1,
     enable_thinking: false,
   };
-  const response = await fetch(`${config.DASHSCOPE_BASE_URL}/chat/completions`, {
+  const response = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${config.DASHSCOPE_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify(body),
   });

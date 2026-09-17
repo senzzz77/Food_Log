@@ -1,8 +1,9 @@
+import type { LocalUser } from "@/types/domain";
 import { apiRequest } from "@/services/api-client";
 
 export interface AuthSession {
   token: string;
-  user: { id: string; username: string };
+  user: LocalUser;
 }
 
 export function registerUser(username: string, password: string) {

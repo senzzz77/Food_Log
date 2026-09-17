@@ -22,7 +22,7 @@ type FoodRow = RowDataPacket & {
 
 async function loadCatalog(): Promise<FoodRow[]> {
   const [rows] = await database.query<FoodRow[]>(
-    "SELECT id, name, category, calories_per_100g AS caloriesPer100g, protein_per_100g AS proteinPer100g, carbs_per_100g AS carbsPer100g, fat_per_100g AS fatPer100g, is_snack AS isSnack FROM food_catalog",
+    "SELECT id, name, category, calories_per_100g AS caloriesPer100g, protein_per_100g AS proteinPer100g, carbs_per_100g AS carbsPer100g, fat_per_100g AS fatPer100g, is_snack AS isSnack FROM food_catalog WHERE is_active = 1",
   );
   return rows;
 }

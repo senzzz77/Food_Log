@@ -32,16 +32,14 @@ export function AuthPage() {
 
   return (
     <main className="app-surface grid min-h-screen lg:grid-cols-[1.05fr_0.95fr]">
-      <section className="hidden border-r border-[#e2e6df] bg-[#edf2eb] p-12 dark:border-[#343b35] dark:bg-[#1c251e] lg:flex lg:flex-col lg:justify-between">
+      <section className="hidden border-r border-[#e2e6df] bg-[#edf2eb] p-12 dark:border-[#343b35] dark:bg-[#1c251e] lg:flex lg:flex-col">
         <div className="flex items-center gap-3 text-[#315d47] dark:text-[#aac7ae]"><span className="flex size-9 items-center justify-center rounded-md border border-current"><Leaf size={19} /></span><span className="font-semibold">饮食助手</span></div>
-        <div className="max-w-md">
-          <p className="mb-4 text-xs font-semibold tracking-[0.16em] text-[#5f7d6d] uppercase">Food. Training. Rhythm.</p>
+        <div className="my-auto max-w-md">
           <h1 className="text-4xl font-semibold leading-tight text-[#223026] dark:text-[#ecf3eb]">把饮食安排成长期可持续的日常。</h1>
           <div className="mt-10 grid grid-cols-2 gap-3">
             {[{ icon: Leaf, label: "菜谱与做法" }, { icon: Dumbbell, label: "目标与消耗" }].map(({ icon: Icon, label }) => <div key={label} className="border border-[#d8e0d6] bg-[#f8faf7] p-4 dark:border-[#39473b] dark:bg-[#202a22]"><Icon size={18} className="mb-6 text-[#5f7d6d]" /><span className="text-sm font-medium text-[#344036] dark:text-[#dce6dc]">{label}</span></div>)}
           </div>
         </div>
-        <p className="text-xs text-[#718073]">本机开发环境 · MySQL 账户认证</p>
       </section>
       <section className="flex items-center justify-center px-6 py-12 sm:px-10">
         <div className="w-full max-w-sm">

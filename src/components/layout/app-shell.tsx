@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { BookOpen, ChartNoAxesCombined, ChefHat, ClipboardList, History, Moon, Sun, UserRound } from "lucide-react";
+import { BookOpen, ChartNoAxesCombined, ChefHat, ClipboardList, History, Moon, ShieldCheck, Sun, UserRound } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
 import { BroccoliMark } from "@/components/brand/broccoli-mark";
 import { ProfileSwitcher } from "@/components/profiles/profile-switcher";
@@ -16,16 +16,19 @@ const primaryNav = [
   { to: "/profiles", label: "档案与指标", icon: UserRound },
 ];
 
+const adminNavItem = { to: "/admin", label: "后台管理", icon: ShieldCheck };
+
 export function AppShell() {
-  const { authToken, activeProfileId, setActiveProfile, setTheme, theme } = useAppStore();
+  const { authToken, activeProfileId, setActiveProfile, setTheme, theme, user } = useAppStore();
   const { profiles, load } = useProfileStore();
+  const navItems = user?.role === "admin" ? [...primaryNav, adminNavItem] : primaryNav;
   useEffect(() => { if (authToken) void load(authToken); }, [authToken, load]);
   useEffect(() => { if (profiles.length && !profiles.some((profile) => profile.id === activeProfileId)) setActiveProfile(profiles[0].id); }, [activeProfileId, profiles, setActiveProfile]);
 
   return <div className="app-surface min-h-screen">
     <header className="app-header">
       <NavLink className="app-brand" to="/recipes" aria-label="饮食助手菜谱库"><BroccoliMark className="app-brand__mark" /><span><strong>饮食助手</strong><small>Eat in season</small></span></NavLink>
-      <nav className="glass-nav" aria-label="主导航">{primaryNav.map(({ to, label, icon: Icon }) => <NavItem key={to} to={to} label={label} icon={<Icon size={15} />} />)}</nav>
+      <nav className="glass-nav" aria-label="主导航">{navItems.map(({ to, label, icon: Icon }) => <NavItem key={to} to={to} label={label} icon={<Icon size={15} />} />)}</nav>
       <ProfileSwitcher />
     </header>
     <aside className="theme-rail"><button className="theme-toggle" title="切换主题" onClick={() => setTheme(theme === "light" ? "dark" : "light")}>{theme === "light" ? <Moon size={18} /> : <Sun size={18} />}<span>{theme === "light" ? "夜色" : "日光"}</span></button></aside>

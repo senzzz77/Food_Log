@@ -59,6 +59,14 @@ export async function profileRoutes(app: FastifyInstance) {
     return { body: rows[0] ?? null };
   });
 
+  app.delete("/:profileId", { onRequest: [app.authenticate] }, async (request, reply) => {
+    const { profileId } = z.object({ profileId: z.string().uuid() }).parse(request.params);
+    if (!(await ownsProfile(profileId, request.user.userId))) return reply.code(404).send({ message: "未找到该档案。" });
+    // profiles 的关联数据（身体指标、饮食记录、体重记录）均配置了级联删除。
+    await database.execute("DELETE FROM profiles WHERE id = ? AND user_id = ?", [profileId, request.user.userId]);
+    return reply.code(204).send();
+  });
+
   app.put("/:profileId/body", { onRequest: [app.authenticate] }, async (request, reply) => {
     const { profileId } = z.object({ profileId: z.string().uuid() }).parse(request.params);
     const input = bodySchema.parse(request.body);

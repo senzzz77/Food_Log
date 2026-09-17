@@ -42,7 +42,7 @@ export async function diaryRoutes(app: FastifyInstance) {
     const { profileId } = z.object({ profileId: z.string().uuid() }).parse(request.params);
     const { date, mealType, text } = z.object({ date: dateSchema, mealType: mealTypeSchema, text: z.string().trim().min(1).max(2000) }).parse(request.body);
     if (!(await ownsProfile(profileId, request.user.userId))) return reply.code(404).send({ message: "未找到该档案。" });
-    const [foods] = await database.query<RowDataPacket[]>("SELECT id, name, calories_per_100g AS caloriesPer100g, protein_per_100g AS proteinPer100g, carbs_per_100g AS carbsPer100g, fat_per_100g AS fatPer100g FROM food_catalog");
+    const [foods] = await database.query<RowDataPacket[]>("SELECT id, name, calories_per_100g AS caloriesPer100g, protein_per_100g AS proteinPer100g, carbs_per_100g AS carbsPer100g, fat_per_100g AS fatPer100g FROM food_catalog WHERE is_active = 1");
     const accepted: unknown[] = []; const rejected: string[] = [];
     for (const rawLine of text.split(/[\n；;]/).map((line) => line.trim()).filter(Boolean)) {
       const match = rawLine.match(/^(.+?)\s+(\d+(?:\.\d+)?)\s*(?:g|克)?$/i);

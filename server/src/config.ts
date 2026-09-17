@@ -14,6 +14,7 @@ const configSchema = z.object({
   DATABASE_USER: z.string().default("diet_app"),
   DATABASE_PASSWORD: z.string().default("diet_app_dev_password"),
   JWT_SECRET: z.string().min(32).default("local-development-secret-change-before-public-deployment"),
+  ADMIN_INITIAL_PASSWORD: z.string().default(""),
   DASHSCOPE_API_KEY: z.string().default(""),
   DASHSCOPE_MODEL: z.string().default("qwen3.5-plus"),
   DASHSCOPE_BASE_URL: z.string().default("https://dashscope.aliyuncs.com/compatible-mode/v1"),

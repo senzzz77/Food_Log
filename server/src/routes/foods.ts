@@ -13,7 +13,7 @@ export async function foodRoutes(app: FastifyInstance) {
     const snack = query.snack === undefined ? null : query.snack === "true";
     const [foods] = await database.query<FoodRow[]>(
       `SELECT id, name, category, calories_per_100g AS caloriesPer100g, protein_per_100g AS proteinPer100g, carbs_per_100g AS carbsPer100g, fat_per_100g AS fatPer100g, is_snack AS isSnack
-       FROM food_catalog WHERE (? = '' OR name LIKE CONCAT('%', ?, '%') OR category LIKE CONCAT('%', ?, '%')) AND (? IS NULL OR is_snack = ?) ORDER BY is_snack, category, name LIMIT 250`,
+       FROM food_catalog WHERE is_active = 1 AND (? = '' OR name LIKE CONCAT('%', ?, '%') OR category LIKE CONCAT('%', ?, '%')) AND (? IS NULL OR is_snack = ?) ORDER BY is_snack, category, name LIMIT 250`,
       [term, term, term, snack, snack],
     );
     return { foods };
@@ -43,7 +43,7 @@ export async function foodRoutes(app: FastifyInstance) {
        ON DUPLICATE KEY UPDATE calories_per_100g = VALUES(calories_per_100g), protein_per_100g = VALUES(protein_per_100g), carbs_per_100g = VALUES(carbs_per_100g), fat_per_100g = VALUES(fat_per_100g)`,
       [id, request.user.userId, input.name, input.caloriesPer100g, input.proteinPer100g, input.carbsPer100g, input.fatPer100g],
     );
-    return reply.code(201).send({ food: { id, name: input.name, ...input } });
+    return reply.code(201).send({ food: { id, ...input } });
   });
 
   app.delete("/mine/:foodId", { onRequest: [app.authenticate] }, async (request, reply) => {

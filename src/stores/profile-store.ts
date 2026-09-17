@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { Profile } from "@/types/domain";
-import { createProfile, listProfiles } from "@/services/profile-service";
+import { createProfile, deleteProfile, listProfiles } from "@/services/profile-service";
 
 interface ProfileState {
   profiles: Profile[];
@@ -8,6 +8,7 @@ interface ProfileState {
   error: string | null;
   load: (token: string) => Promise<void>;
   create: (token: string, data: Pick<Profile, "displayName" | "accent">) => Promise<Profile>;
+  remove: (token: string, profileId: string) => Promise<void>;
   reset: () => void;
 }
 
@@ -28,6 +29,10 @@ export const useProfileStore = create<ProfileState>((set) => ({
     const { profile } = await createProfile(token, data);
     set((state) => ({ profiles: [profile, ...state.profiles] }));
     return profile;
+  },
+  remove: async (token, profileId) => {
+    await deleteProfile(token, profileId);
+    set((state) => ({ profiles: state.profiles.filter((profile) => profile.id !== profileId) }));
   },
   reset: () => set({ profiles: [], isLoading: false, error: null }),
 }));

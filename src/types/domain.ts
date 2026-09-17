@@ -3,9 +3,12 @@ export type FitnessGoal = "fat_loss" | "muscle_gain" | "maintenance";
 
 export type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "very_active";
 
+export type UserRole = "user" | "admin";
+
 export interface LocalUser {
   id: string;
   username: string;
+  role: UserRole;
 }
 
 export interface Profile {

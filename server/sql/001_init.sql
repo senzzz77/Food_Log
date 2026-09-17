@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
   id CHAR(36) NOT NULL PRIMARY KEY,
   username VARCHAR(48) NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
+  role ENUM('user', 'admin') NOT NULL DEFAULT 'user',
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   UNIQUE KEY uk_users_username (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -40,6 +41,7 @@ CREATE TABLE IF NOT EXISTS food_catalog (
   carbs_per_100g DECIMAL(7,2) NOT NULL DEFAULT 0,
   fat_per_100g DECIMAL(7,2) NOT NULL DEFAULT 0,
   is_snack BOOLEAN NOT NULL DEFAULT FALSE,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   UNIQUE KEY uk_food_catalog_name (name),
   KEY idx_food_catalog_category (category)
@@ -71,4 +73,15 @@ CREATE TABLE IF NOT EXISTS weight_logs (
   CONSTRAINT fk_weight_logs_profile FOREIGN KEY (profile_id) REFERENCES profiles(id) ON DELETE CASCADE,
   UNIQUE KEY uk_weight_logs_profile_date (profile_id, logged_on),
   KEY idx_weight_logs_profile_date (profile_id, logged_on)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE IF NOT EXISTS vision_keys (
+  id CHAR(36) NOT NULL PRIMARY KEY,
+  label VARCHAR(64) NOT NULL,
+  api_key VARCHAR(255) NOT NULL,
+  model VARCHAR(64) NOT NULL,
+  base_url VARCHAR(255) NOT NULL,
+  is_active BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  updated_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { LocalUser } from "@/types/domain";
 
 interface AppState {
   authToken: string | null;
-  user: { id: string; username: string } | null;
+  user: LocalUser | null;
   activeProfileId: string | null;
   theme: "light" | "dark";
-  setSession: (session: { token: string; user: { id: string; username: string } }) => void;
+  setSession: (session: { token: string; user: LocalUser }) => void;
   setActiveProfile: (profileId: string | null) => void;
   setTheme: (theme: "light" | "dark") => void;
   logout: () => void;

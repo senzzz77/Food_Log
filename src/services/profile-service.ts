@@ -9,6 +9,10 @@ export function createProfile(token: string, data: Pick<Profile, "displayName" |
   return apiRequest<{ profile: Profile }>("/profiles", { method: "POST", body: JSON.stringify(data) }, token);
 }
 
+export function deleteProfile(token: string, profileId: string) {
+  return apiRequest<void>(`/profiles/${profileId}`, { method: "DELETE" }, token);
+}
+
 export function loadBodyProfile(token: string, profileId: string) {
   return apiRequest<{ body: BodyProfile | null }>(`/profiles/${profileId}/body`, {}, token);
 }

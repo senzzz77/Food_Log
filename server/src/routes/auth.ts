@@ -22,16 +22,16 @@ export async function authRoutes(app: FastifyInstance) {
 
     const id = crypto.randomUUID();
     const passwordHash = await bcrypt.hash(input.password, 12);
-    await database.execute("INSERT INTO users (id, username, password_hash) VALUES (?, ?, ?)", [id, username, passwordHash]);
+    await database.execute("INSERT INTO users (id, username, password_hash, role) VALUES (?, ?, ?, 'user')", [id, username, passwordHash]);
     const token = await reply.jwtSign({ userId: id, username });
-    return reply.code(201).send({ token, user: { id, username } });
+    return reply.code(201).send({ token, user: { id, username, role: "user" } });
   });
 
   app.post("/login", async (request, reply) => {
     const input = credentialsSchema.parse(request.body);
     const username = normalizeUsername(input.username);
-    const [users] = await database.query<Array<RowDataPacket & { id: string; username: string; password_hash: string }>>(
-      "SELECT id, username, password_hash FROM users WHERE username = ? LIMIT 1",
+    const [users] = await database.query<Array<RowDataPacket & { id: string; username: string; password_hash: string; role: string }>>(
+      "SELECT id, username, password_hash, role FROM users WHERE username = ? LIMIT 1",
       [username],
     );
     const user = users[0];
@@ -39,10 +39,16 @@ export async function authRoutes(app: FastifyInstance) {
       return reply.code(401).send({ message: "用户名或密码不正确。" });
     }
     const token = await reply.jwtSign({ userId: user.id, username: user.username });
-    return { token, user: { id: user.id, username: user.username } };
+    return { token, user: { id: user.id, username: user.username, role: user.role } };
   });
 
-  app.get("/me", { onRequest: [app.authenticate] }, async (request) => ({
-    user: { id: request.user.userId, username: request.user.username },
-  }));
+  app.get("/me", { onRequest: [app.authenticate] }, async (request, reply) => {
+    const [users] = await database.query<Array<RowDataPacket & { username: string; role: string }>>(
+      "SELECT username, role FROM users WHERE id = ? LIMIT 1",
+      [request.user.userId],
+    );
+    const user = users[0];
+    if (!user) return reply.code(401).send({ message: "登录状态已失效，请重新登录。" });
+    return { user: { id: request.user.userId, username: user.username, role: user.role } };
+  });
 }
