@@ -55,7 +55,10 @@ Open `https://<APP_DOMAIN>`. Caddy automatically obtains and renews the TLS cert
 docker compose --env-file deploy/.env.production -f docker-compose.production.yml logs -f api
 
 # Upgrade after pulling new code
+# 注意：dist/ 不入库，必须在本地 npm run build 后上传产物，否则 web 镜像会是空的
 git pull
+# 本地执行：npm run build，然后上传 dist 到服务器项目目录
+scp -r dist root@<SERVER_IP>:/opt/diet-assistant/
 docker compose --env-file deploy/.env.production -f docker-compose.production.yml up -d --build
 
 # Database backup

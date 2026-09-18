@@ -34,6 +34,8 @@ services:
       DATABASE_USER: ${MYSQL_USER}
       DATABASE_PASSWORD: ${MYSQL_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+      # 首次启动时用它创建 admin 账号，留空则随机生成并打印到日志
+      ADMIN_INITIAL_PASSWORD: ${ADMIN_INITIAL_PASSWORD:-}
       DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY}
       DASHSCOPE_MODEL: ${DASHSCOPE_MODEL:-qwen3.8-flash}
       DASHSCOPE_BASE_URL: ${DASHSCOPE_BASE_URL:-https://konapi.cloud/v1}
