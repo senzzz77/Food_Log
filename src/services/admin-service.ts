@@ -1,4 +1,4 @@
-import type { UserRole } from "@/types/domain";
+import type { MealEntry, UserRole } from "@/types/domain";
 import { apiRequest } from "@/services/api-client";
 
 export interface AdminUser {
@@ -58,6 +58,34 @@ export interface VisionKeyInput {
   baseUrl: string;
 }
 
+export interface AdminBodyProfile {
+  heightCm: number;
+  weightKg: number;
+  age: number;
+  sex: "male" | "female";
+  activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
+  goal: "fat_loss" | "muscle_gain" | "maintenance";
+  targetWeightKg: number;
+  weeklyRateKg: number;
+  manualTdee: number | null;
+  manualTargetCalories: number | null;
+  manualProtein: number | null;
+  manualCarbs: number | null;
+  manualFat: number | null;
+  updatedAt: string;
+}
+
+export interface AdminProfileData {
+  profile: AdminProfile & { userId: string; username: string };
+  body: AdminBodyProfile | null;
+  date: string;
+  entries: MealEntry[];
+  summary: { calories: number; protein: number; carbs: number; fat: number };
+  stats: { mealCount: number; mealDays: number; lastMealDate: string | null; weightCount: number; lastWeightDate: string | null };
+  weights: Array<{ date: string; weightKg: number }>;
+  calories: Array<{ date: string; calories: number }>;
+}
+
 export function listUsers(token: string) {
   return apiRequest<{ users: AdminUser[] }>("/admin/users", {}, token);
 }
@@ -76,6 +104,10 @@ export function listUserProfiles(token: string, userId: string) {
 
 export function deleteAdminProfile(token: string, profileId: string) {
   return apiRequest<void>(`/admin/profiles/${profileId}`, { method: "DELETE" }, token);
+}
+
+export function getAdminProfileData(token: string, profileId: string, date: string) {
+  return apiRequest<AdminProfileData>(`/admin/profiles/${profileId}/data?date=${date}`, {}, token);
 }
 
 export function listAdminFoods(token: string, query: string) {

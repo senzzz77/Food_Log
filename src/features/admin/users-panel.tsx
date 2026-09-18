@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { ChevronDown, ChevronRight, RefreshCw, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Eye, RefreshCw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Select } from "@/components/ui/field";
+import { ProfileDataPanel } from "@/features/admin/profile-data-panel";
 import { deleteAdminProfile, deleteUser, listUserProfiles, listUsers, updateUserRole, type AdminProfile, type AdminUser } from "@/services/admin-service";
 import { useAppStore } from "@/stores/app-store";
 import type { UserRole } from "@/types/domain";
@@ -24,6 +25,7 @@ export function UsersPanel() {
   const [profiles, setProfiles] = useState<AdminProfile[]>([]);
   const [pendingUser, setPendingUser] = useState<AdminUser | null>(null);
   const [pendingProfile, setPendingProfile] = useState<AdminProfile | null>(null);
+  const [openedProfile, setOpenedProfile] = useState<AdminProfile | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export function UsersPanel() {
   }, [token, reloadKey]);
 
   useEffect(() => {
-    if (!token || !expandedId) { setProfiles([]); return; }
+    if (!token || !expandedId) { setProfiles([]); setOpenedProfile(null); return; }
     let alive = true;
     void listUserProfiles(token, expandedId)
       .then(({ profiles: items }) => { if (alive) setProfiles(items); })
@@ -79,6 +81,7 @@ export function UsersPanel() {
     setDeleting(true);
     try {
       await deleteAdminProfile(token, pendingProfile.id);
+      if (openedProfile?.id === pendingProfile.id) setOpenedProfile(null);
       setPendingProfile(null);
       setMessage(null);
       refresh();
@@ -110,7 +113,10 @@ export function UsersPanel() {
       </table>
       {expandedId && <div className="border-t border-[#eef3ec] bg-[#f8fbf5] px-5 py-4 dark:border-[#2c382e] dark:bg-[#1b241c]">
         <h3 className="text-xs font-semibold tracking-wide text-[#5f7d6d] uppercase">该用户的档案</h3>
-        {profiles.length ? <ul className="mt-3 grid gap-2 sm:grid-cols-2">{profiles.map((profile) => <li key={profile.id} className="flex items-center justify-between gap-3 rounded-md border border-[#e1e9dc] bg-white px-3 py-2 text-sm dark:border-[#3d5040] dark:bg-[#202b22]"><span className="flex min-w-0 items-center gap-2"><span className="size-3 flex-none rounded-full" style={{ backgroundColor: profile.accent }} /><span className="truncate">{profile.displayName}</span></span><button className="subtle-text p-1 hover:text-[#b34a3e]" title="删除该档案" onClick={() => setPendingProfile(profile)}><Trash2 size={15} /></button></li>)}</ul> : <p className="subtle-text mt-2 text-sm">该用户还没有档案。</p>}
+        {profiles.length ? <ul className="mt-3 grid gap-2 sm:grid-cols-2">{profiles.map((profile) => <li key={profile.id} className="rounded-md border border-[#e1e9dc] bg-white px-3 py-2 text-sm dark:border-[#3d5040] dark:bg-[#202b22]">
+          <div className="flex items-center justify-between gap-3"><span className="flex min-w-0 items-center gap-2"><span className="size-3 flex-none rounded-full" style={{ backgroundColor: profile.accent }} /><span className="truncate">{profile.displayName}</span></span><span className="flex flex-none items-center gap-1"><button className="subtle-text inline-flex items-center gap-1 px-1 text-xs hover:text-[#3c6b43] dark:hover:text-[#d7ebd1]" title="查看该档案的数据与记录" onClick={() => setOpenedProfile(openedProfile?.id === profile.id ? null : profile)}><Eye size={15} />查看数据</button><button className="subtle-text p-1 hover:text-[#b34a3e]" title="删除该档案" onClick={() => setPendingProfile(profile)}><Trash2 size={15} /></button></span></div>
+        </li>)}</ul> : <p className="subtle-text mt-2 text-sm">该用户还没有档案。</p>}
+        {openedProfile && token && profiles.some((item) => item.id === openedProfile.id) && <ProfileDataPanel token={token} profile={openedProfile} onClose={() => setOpenedProfile(null)} />}
       </div>}
     </div>}
     <ConfirmDialog open={pendingUser !== null} onOpenChange={(open) => { if (!open) setPendingUser(null); }} title="删除用户" description={`删除「${pendingUser?.username ?? ""}」会同时清除他的全部档案、饮食记录与体重记录，且无法恢复。`} pending={deleting} onConfirm={() => void confirmRemoveUser()} />

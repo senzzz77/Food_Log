@@ -10,7 +10,7 @@ import { getTrends } from "@/services/progress-service";
 import { useAppStore } from "@/stores/app-store";
 import { useProfileStore } from "@/stores/profile-store";
 
-type Trends = { weights: Array<{ date: string; weightKg: number }>; calories: Array<{ date: string; calories: number }> };
+export type Trends = { weights: Array<{ date: string; weightKg: number }>; calories: Array<{ date: string; calories: number }> };
 echarts.use([BarChart, CanvasRenderer, GridComponent, EChartsLineChart, TooltipComponent]);
 
 export function ProgressPage() {
@@ -29,7 +29,7 @@ export function ProgressPage() {
   return <div className="mx-auto max-w-6xl"><PageHeader eyebrow={profile.displayName} title="进度" description="体重与摄入热量会在这里留下安静、连续的变化轨迹。" /><section className="panel rounded-md p-5 sm:p-7"><div className="mb-6 flex items-center gap-2"><span className="inline-flex size-8 items-center justify-center rounded-full bg-[#e5f1df] text-[#557e51] dark:bg-[#2d432e] dark:text-[#c9e2c4]"><LineChart size={16} /></span><div><h2 className="font-bold">近 90 天趋势</h2><p className="subtle-text mt-0.5 text-xs">绿色曲线为体重，暖色柱为每日摄入热量。</p></div></div><TrendChart trends={trends} /></section>{message && <p className="mt-5 border-l-2 border-[#5f7d6d] bg-[#eff6ef] px-3 py-2 text-sm text-[#315d47] dark:bg-[#203024] dark:text-[#bfdbbf]">{message}</p>}</div>;
 }
 
-function TrendChart({ trends }: { trends: Trends }) {
+export function TrendChart({ trends }: { trends: Trends }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!ref.current) return;

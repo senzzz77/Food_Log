@@ -5,9 +5,20 @@ import { database } from "../database.js";
 import { invalidateActiveVisionKey } from "../vision.js";
 
 const idSchema = z.string().uuid();
+const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "日期格式应为 YYYY-MM-DD");
 
 function isDuplicateEntry(error: unknown) {
   return typeof error === "object" && error !== null && (error as { code?: string }).code === "ER_DUP_ENTRY";
+}
+
+function round(value: number) {
+  return Math.round(value * 10) / 10;
+}
+
+/** 服务器本地时区的今天，避免直接用 toISOString 在凌晨取到前一天。 */
+function localToday() {
+  const now = new Date();
+  return new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 }
 
 /** 只回传 Key 的尾 4 位，避免后台页面把完整密钥暴露在响应里。 */
@@ -71,6 +82,71 @@ export async function adminRoutes(app: FastifyInstance) {
     const [result] = await database.execute<ResultSetHeader>("DELETE FROM profiles WHERE id = ?", [profileId]);
     if (result.affectedRows === 0) return reply.code(404).send({ message: "档案不存在。" });
     return reply.code(204).send();
+  });
+
+  // ---------- 查看档案数据（只读）----------
+  // 用户侧接口都带 ownsProfile 归属校验，管理员无法复用，因此这里单独提供只读视图。
+  app.get("/profiles/:profileId/data", adminOnly, async (request, reply) => {
+    const { profileId } = z.object({ profileId: idSchema }).parse(request.params);
+    const { date } = z.object({ date: dateSchema.optional() }).parse(request.query);
+    const day = date ?? localToday();
+
+    const [profiles] = await database.query<RowDataPacket[]>(
+      `SELECT p.id, p.display_name AS displayName, p.accent, p.created_at AS createdAt, p.updated_at AS updatedAt,
+              p.user_id AS userId, u.username
+       FROM profiles p JOIN users u ON u.id = p.user_id WHERE p.id = ? LIMIT 1`,
+      [profileId],
+    );
+    if (!profiles[0]) return reply.code(404).send({ message: "档案不存在。" });
+
+    const [bodies] = await database.query<RowDataPacket[]>(
+      "SELECT height_cm AS heightCm, weight_kg AS weightKg, age, sex, activity_level AS activityLevel, goal, target_weight_kg AS targetWeightKg, weekly_rate_kg AS weeklyRateKg, manual_tdee AS manualTdee, manual_target_calories AS manualTargetCalories, manual_protein AS manualProtein, manual_carbs AS manualCarbs, manual_fat AS manualFat, updated_at AS updatedAt FROM body_profiles WHERE profile_id = ?",
+      [profileId],
+    );
+
+    const [entries] = await database.query<RowDataPacket[]>(
+      "SELECT id, entry_date AS date, meal_type AS mealType, source, name, grams, calories, protein, carbs, fat, created_at AS createdAt FROM meal_entries WHERE profile_id = ? AND entry_date = ? ORDER BY created_at",
+      [profileId, day],
+    );
+    const summary = entries.reduce(
+      (total, entry) => ({ calories: total.calories + Number(entry.calories), protein: total.protein + Number(entry.protein), carbs: total.carbs + Number(entry.carbs), fat: total.fat + Number(entry.fat) }),
+      { calories: 0, protein: 0, carbs: 0, fat: 0 },
+    );
+
+    const [stats] = await database.query<RowDataPacket[]>(
+      "SELECT COUNT(*) AS mealCount, COUNT(DISTINCT entry_date) AS mealDays, DATE_FORMAT(MAX(entry_date), '%Y-%m-%d') AS lastMealDate FROM meal_entries WHERE profile_id = ?",
+      [profileId],
+    );
+    const [weightStats] = await database.query<RowDataPacket[]>(
+      "SELECT COUNT(*) AS weightCount, DATE_FORMAT(MAX(logged_on), '%Y-%m-%d') AS lastWeightDate FROM weight_logs WHERE profile_id = ?",
+      [profileId],
+    );
+
+    const [weights] = await database.query<RowDataPacket[]>(
+      "SELECT DATE_FORMAT(logged_on, '%Y-%m-%d') AS date, weight_kg AS weightKg FROM weight_logs WHERE profile_id = ? ORDER BY logged_on ASC LIMIT 90",
+      [profileId],
+    );
+    const [calories] = await database.query<RowDataPacket[]>(
+      "SELECT DATE_FORMAT(entry_date, '%Y-%m-%d') AS date, ROUND(SUM(calories)) AS calories FROM meal_entries WHERE profile_id = ? GROUP BY entry_date ORDER BY entry_date ASC LIMIT 90",
+      [profileId],
+    );
+
+    return {
+      profile: profiles[0],
+      body: bodies[0] ?? null,
+      date: day,
+      entries,
+      summary: Object.fromEntries(Object.entries(summary).map(([key, value]) => [key, round(value)])),
+      stats: {
+        mealCount: Number(stats[0]?.mealCount ?? 0),
+        mealDays: Number(stats[0]?.mealDays ?? 0),
+        lastMealDate: stats[0]?.lastMealDate ?? null,
+        weightCount: Number(weightStats[0]?.weightCount ?? 0),
+        lastWeightDate: weightStats[0]?.lastWeightDate ?? null,
+      },
+      weights,
+      calories,
+    };
   });
 
   // ---------- 食物库 ----------
